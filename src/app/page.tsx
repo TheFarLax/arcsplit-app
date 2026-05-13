@@ -116,18 +116,34 @@ export default function LandingPage() {
       </main>
 
       <footer className="px-6 py-12 border-t border-slate-100 bg-white">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-slate-500 text-sm">
-          <div className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-slate-500 text-xs font-medium">
+          <div className="flex items-center gap-3">
             <div className="w-6 h-6 bg-slate-900 rounded flex items-center justify-center">
-              <span className="text-white text-xs font-bold italic">A</span>
+              <span className="text-white text-[10px] font-bold italic">A</span>
             </div>
-            <span className="font-semibold text-slate-900">ArcSplit</span>
+            <span className="font-bold text-slate-900">ArcSplit</span>
+            <span className="text-slate-300">|</span>
             <span>&copy; 2026</span>
           </div>
-          <div className="flex items-center gap-8">
-            <a href="#" className="hover:text-slate-900">Privacy</a>
-            <a href="#" className="hover:text-slate-900">Terms</a>
-            <a href="https://testnet.arcscan.app" className="hover:text-slate-900">ArcScan</a>
+
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
+            <div className="flex items-center gap-8">
+              <Link href="/privacy" className="hover:text-slate-900 transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-slate-900 transition-colors">Terms</Link>
+              <a href="https://testnet.arcscan.app" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 transition-colors">ArcScan</a>
+            </div>
+            
+            <div className="flex items-center gap-2 text-slate-400">
+              <span>Built by</span>
+              <a 
+                href="https://x.com/TheFarLax" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-slate-900 font-bold hover:text-blue-600 transition-all duration-300"
+              >
+                @TheFarLax
+              </a>
+            </div>
           </div>
         </div>
       </footer>

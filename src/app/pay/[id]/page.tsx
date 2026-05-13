@@ -74,11 +74,44 @@ export default function PaymentPage() {
     query: { enabled: !!address },
   });
 
-  const { writeContract: approve, data: approveHash } = useWriteContract();
-  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } = useWaitForTransactionReceipt({ hash: approveHash });
+  const { writeContract: approve, data: approveHash, error: approveError, reset: resetApprove } = useWriteContract();
+  const { 
+    isLoading: isApproveConfirming, 
+    isSuccess: isApproveConfirmed,
+    isError: isApproveError,
+    error: approveReceiptError 
+  } = useWaitForTransactionReceipt({ hash: approveHash });
 
-  const { writeContract: pay, data: payHash } = useWriteContract();
-  const { isLoading: isPayConfirming, isSuccess: isPayConfirmed } = useWaitForTransactionReceipt({ hash: payHash });
+  const { writeContract: pay, data: payHash, error: payError, reset: resetPay } = useWriteContract();
+  const { 
+    isLoading: isPayConfirming, 
+    isSuccess: isPayConfirmed,
+    isError: isPayError,
+    error: payReceiptError 
+  } = useWaitForTransactionReceipt({ hash: payHash });
+
+  // Monitor connector for debugging
+  const { connector } = useAccount();
+
+  useEffect(() => {
+    if (connector) {
+      console.log('--- WALLET SESSION ---');
+      console.log('Active Connector:', connector.name);
+      console.log('Ready State:', connector.ready);
+      console.log('----------------------');
+    }
+  }, [connector]);
+
+  useEffect(() => {
+    if (isApproveError || isPayError || approveError || payError) {
+      console.error('--- TRANSACTION ERROR ---');
+      console.error('Approve Error:', approveError || approveReceiptError);
+      console.error('Pay Error:', payError || payReceiptError);
+      console.log('Resetting lifecycle state...');
+      setStep('idle');
+      // We don't reset wagmi hooks immediately to allow user to see error if we add a toast later
+    }
+  }, [isApproveError, isPayError, approveError, payError, approveReceiptError, payReceiptError]);
 
   useEffect(() => {
     fetchSplit();
@@ -86,12 +119,14 @@ export default function PaymentPage() {
 
   useEffect(() => {
     if (isApproveConfirmed) {
+      console.log('Approval confirmed. Moving to pay step...');
       handlePay();
     }
   }, [isApproveConfirmed]);
 
   useEffect(() => {
     if (isPayConfirmed) {
+      console.log('Payment confirmed. Recording and finishing...');
       handleRecordPayment();
       setStep('success');
       setTimeout(() => {
@@ -128,11 +163,16 @@ export default function PaymentPage() {
   const handleAction = async () => {
     if (!isConnected) return;
     
-    const amountInWei = parseUnits(amount, 6); // USDC has 6 decimals usually, but check Arc docs.
-    // Arc Testnet USDC might have 6 or 18 decimals. The docs say 0x36...0 is USDC.
-    // I'll assume 6 as it's standard for USDC.
+    console.log('--- PREPARING TRANSACTION ---');
+    resetApprove();
+    resetPay();
+
+    const amountInWei = parseUnits(amount, 6); 
+    console.log('Target Amount:', amount, 'USDC');
+    console.log('Current Allowance:', allowance ? formatUnits(allowance as bigint, 6) : '0');
 
     if (!allowance || (allowance as bigint) < amountInWei) {
+      console.log('Insufficient allowance. Requesting approval...');
       setStep('approving');
       approve({
         address: USDC_ADDRESS,
@@ -141,17 +181,17 @@ export default function PaymentPage() {
         args: [CONTRACT_ADDRESS as `0x${string}`, amountInWei],
       });
     } else {
+      console.log('Sufficient allowance. Proceeding to payment...');
       handlePay();
     }
   };
 
   const handlePay = () => {
     const amountInWei = parseUnits(amount, 6);
-    console.log('--- DEBUG: PAYING SPLIT ---');
-    console.log('Split Name:', split.name);
-    console.log('On-Chain Split ID:', split.on_chain_id);
-    console.log('Amount (Wei):', amountInWei.toString());
-    console.log('---------------------------');
+    console.log('--- INITIATING PAYMENT ---');
+    console.log('Split:', split.name);
+    console.log('On-Chain ID:', split.on_chain_id);
+    
     setStep('paying');
     pay({
       address: CONTRACT_ADDRESS as `0x${string}`,

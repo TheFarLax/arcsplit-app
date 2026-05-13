@@ -48,8 +48,35 @@ export default function Dashboard() {
   const [splitName, setSplitName] = useState('');
   const [recipients, setRecipients] = useState([{ address: '', percentage: '' }]);
 
-  const { writeContract, data: hash, isPending } = useWriteContract();
-  const { data: receipt, isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
+  const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
+  const { 
+    data: receipt, 
+    isLoading: isConfirming, 
+    isSuccess: isConfirmed,
+    isError,
+    error: receiptError
+  } = useWaitForTransactionReceipt({ hash });
+
+  // Monitor connector for debugging
+  const { connector } = useAccount();
+
+  useEffect(() => {
+    if (connector) {
+      console.log('--- WALLET SESSION ---');
+      console.log('Active Connector:', connector.name);
+      console.log('Ready State:', connector.ready);
+      console.log('----------------------');
+    }
+  }, [connector]);
+
+  useEffect(() => {
+    if (error || isError) {
+      console.error('--- TRANSACTION ERROR ---');
+      console.error('Write Error:', error);
+      console.error('Receipt Error:', receiptError);
+      console.log('Resetting dashboard tx state...');
+    }
+  }, [error, isError, receiptError]);
 
   useEffect(() => {
     if (isConnected && address) {
@@ -74,8 +101,9 @@ export default function Dashboard() {
       handleSaveToSupabase(splitId);
       setIsModalOpen(false);
       resetForm();
+      reset(); // Clear wagmi state after success
     }
-  }, [isConfirmed, receipt]);
+  }, [isConfirmed, receipt, reset]);
 
   const fetchSplits = async () => {
     if (!address) return;
@@ -119,6 +147,9 @@ export default function Dashboard() {
   const onCreateSplit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('--- INITIATING SPLIT CREATION ---');
+    reset();
+
     const addresses = recipients.map(r => r.address);
     const percentages = recipients.map(r => BigInt(Math.round(parseFloat(r.percentage) * 100))); // Convert to basis points (e.g. 70.00 -> 7000)
 
