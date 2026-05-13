@@ -68,7 +68,7 @@ export default function Dashboard() {
       });
 
       console.log('Parsed logs:', logs);
-      const splitId = logs.length > 0 ? Number((logs[0].args as any).splitId) : 0;
+      const splitId = logs.length > 0 ? Number((logs[0] as any).args?.splitId || 0) : 0;
       console.log('Extracted splitId:', splitId);
 
       handleSaveToSupabase(splitId);
