@@ -239,12 +239,14 @@ export default function PaymentPage() {
                 </div>
               </div>
 
-              {!isConnected ? (
+              {!isConnected && (
                 <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex gap-3 text-amber-800 text-sm">
                   <Info className="flex-shrink-0" size={18} />
                   <p>Please connect your wallet to proceed with the payment.</p>
                 </div>
-              ) : (
+              )}
+
+              {isConnected && (
                 <button
                   disabled={step !== 'idle' && step !== 'success'}
                   onClick={handleAction}
@@ -272,7 +274,7 @@ export default function PaymentPage() {
                        <span>Settlement Finalized</span>
                     </motion.div>
                   ) : (
-                    <> Send {amount} USDC <ArrowRight size={20} /> </>
+                    <>Send {amount} USDC <ArrowRight size={20} /></>
                   )}
                 </button>
               )}
