@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useChainId, useSwitchChain } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, ArrowRight, Wallet, Info, QrCode, Copy } from 'lucide-react';
@@ -13,6 +13,7 @@ import QRCode from "react-qr-code";
 
 const USDC_ADDRESS = '0x3600000000000000000000000000000000000000';
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000';
+const ARC_CHAIN_ID = 5042002;
 
 const USDC_ABI = [
   {
@@ -61,10 +62,14 @@ export default function PaymentPage() {
   const { id } = useParams();
   const router = useRouter();
   const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
   const [split, setSplit] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [amount, setAmount] = useState('10');
   const [step, setStep] = useState<'idle' | 'approving' | 'paying' | 'success'>('idle');
+
+  const isWrongNetwork = isConnected && chainId !== ARC_CHAIN_ID;
 
   const { data: allowance } = useReadContract({
     address: USDC_ADDRESS,
@@ -247,12 +252,33 @@ export default function PaymentPage() {
                   <Info className="flex-shrink-0" size={18} />
                   <p>Please connect your wallet to proceed with the payment.</p>
                 </div>
+              ) : isWrongNetwork ? (
+                <div className="space-y-4">
+                  <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 text-red-800 text-sm">
+                    <Info className="flex-shrink-0" size={18} />
+                    <div>
+                      <p className="font-bold">Wrong Network</p>
+                      <p className="opacity-80">Please switch to Arc Testnet to continue with the payment.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => switchChain({ chainId: ARC_CHAIN_ID })}
+                    className="w-full py-5 bg-black text-white text-lg font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-black/10"
+                  >
+                    Switch to Arc Testnet
+                  </button>
+                  <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                    Network Required: Arc Testnet
+                  </div>
+                </div>
               ) : (
-                <button
-                  disabled={step !== 'idle' && step !== 'success'}
-                  onClick={handleAction}
-                  className="w-full py-5 bg-black text-white text-lg font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
-                >
+                <div className="space-y-4">
+                  <button
+                    disabled={step !== 'idle' && step !== 'success'}
+                    onClick={handleAction}
+                    className="w-full py-5 bg-black text-white text-lg font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                  >
                   {step === 'approving' || isApproveConfirming ? (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2">
                        <div className="flex items-center gap-3">
@@ -277,7 +303,11 @@ export default function PaymentPage() {
                   ) : (
                     <> Send {amount} USDC <ArrowRight size={20} /> </>
                   )}
-                </button>
+                  <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                    Network Required: Arc Testnet
+                  </div>
+                </div>
               )}
 
               <p className="text-center text-xs text-slate-400">
