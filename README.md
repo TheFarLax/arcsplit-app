@@ -1,38 +1,48 @@
-# ArcSplit
+# ArcSplit | Programmable Settlement Infrastructure
 
-**Programmable Stablecoin Revenue Splitting on Arc Testnet.**
+**Automated USDC Distribution Rails on Arc Network.**
 
-ArcSplit is a modern fintech-style MVP that enables automatic, multi-wallet USDC distribution. Built for the Arc ecosystem, it demonstrates how programmable payments can simplify revenue sharing for teams, projects, and creators.
+ArcSplit is a professional-grade settlement infrastructure that enables creators and businesses to build programmable payout rails. Built on the Arc Testnet, it provides a trustless, atomic distribution engine for stablecoin revenue splitting.
 
-## Key Features
+## 🚀 Infrastructure Features
 
-- **Multi-Wallet Splits**: Define multiple recipients with custom payout percentages.
-- **Atomic Settlement**: Funds are distributed instantly in a single transaction.
-- **Programmable Infrastructure**: Built on Arc Testnet via Solidity smart contracts.
-- **Modern UX**: Clean dashboard, simple payment links, and detailed receipts.
+- **Settlement Rails**: Create reusable payout configurations with up to 100% distribution across multiple wallets.
+- **Atomic Settlement**: Funds are routed instantly to recipients in a single, trustless transaction on-chain.
+- **Audit Logging**: Dedicated settlement history for professional tracking and auditing of all distributions.
+- **Infrastructure Dashboard**: A high-fidelity, fintech-grade interface for managing payout rails and monitoring flow.
+- **Payment Terminals**: Polished, QR-ready mobile payment experience for instant USDC settlement.
 
-## Tech Stack
+## 🛠️ Technical Stack
 
-- **Frontend**: Next.js 15 (App Router), Tailwind CSS 4, Framer Motion.
-- **Web3**: Wagmi, Viem, RainbowKit, Reown.
-- **Backend**: Supabase.
-- **Contracts**: Solidity 0.8.20.
-- **Network**: Arc Testnet (Chain ID: 5042002).
+- **Core Framework**: Next.js 16 (App Router) with Turbopack.
+- **Styling**: Tailwind CSS, Framer Motion for premium micro-interactions.
+- **Web3 Layer**: Wagmi v2, Viem v2, RainbowKit.
+- **Database/Storage**: Supabase (PostgreSQL) for meta-data and rail indexing.
+- **Smart Contracts**: Solidity 0.8.20 (deployed on Arc Testnet ID: 5042002).
 
-## Quick Start
+## 🔧 Environment Setup
 
-1. **Setup Environment**:
-   Copy `.env.local.example` to `.env.local` and fill in your Supabase and Reown credentials.
+1. **Configurations**:
+   Copy `.env.local.example` to `.env.local`.
+   ```bash
+   NEXT_PUBLIC_CONTRACT_ADDRESS=0x5F3fF0545c17C2c66ECbd1EbE451aF02a11EEF97
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   ```
 
-2. **Deploy Contract**:
-   Use Foundry to deploy `contracts/ArcSplit.sol` to the Arc Testnet. Update `NEXT_PUBLIC_CONTRACT_ADDRESS` in `.env.local`.
-
-3. **Install & Run**:
+2. **Installation**:
    ```bash
    npm install
+   ```
+
+3. **Development**:
+   ```bash
    npm run dev
    ```
 
-## Design Philosophy
+## 🏗️ Design Philosophy
 
-ArcSplit follows a "Fintech First" design aesthetic, inspired by platforms like Stripe and Mercury. It prioritizes clarity, minimal use of color, and high-quality typography over typical "degen" crypto aesthetics.
+ArcSplit rejects "degen" aesthetics in favor of professional fintech depth. Inspired by Stripe and Mercury, the interface uses a minimalist palette (Slate, Graphite, White) with refined shadows and intentional typography to provide a trustworthy environment for financial operations.
+
+---
+Built for the **Arc Advanced Agentic Coding** ecosystem.
