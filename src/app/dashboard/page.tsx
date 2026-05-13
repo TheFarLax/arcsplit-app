@@ -75,7 +75,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (isConfirmed && receipt) {
       console.log('Transaction confirmed. Receipt:', receipt);
-      
+
       const logs = parseEventLogs({
         abi: CONTRACT_ABI,
         eventName: 'SplitCreated',
@@ -83,7 +83,10 @@ export default function Dashboard() {
       });
 
       console.log('Parsed logs:', logs);
-      const splitId = logs.length > 0 ? Number((logs[0].args as any).splitId) : 0;
+      const splitId =
+        logs.length > 0
+          ? Number((logs[0] as any).args?.splitId)
+          : 0;
       console.log('Extracted splitId:', splitId);
 
       handleSaveToSupabase(splitId);
@@ -132,7 +135,7 @@ export default function Dashboard() {
 
   const onCreateSplit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const addresses = recipients.map(r => r.address);
     const percentages = recipients.map(r => BigInt(Math.round(parseFloat(r.percentage) * 100))); // Convert to basis points (e.g. 70.00 -> 7000)
 
@@ -177,11 +180,11 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-[#F9FAFB]">
         <Navbar />
-        
+
         {/* Hero Onboarding */}
         <div className="max-w-7xl mx-auto px-6 pt-20 pb-32">
           <div className="max-w-3xl mb-24">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-full text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-8 shadow-sm"
@@ -189,16 +192,16 @@ export default function Dashboard() {
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               Infrastructure Live on Arc Testnet
             </motion.div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="text-6xl md:text-7xl font-bold text-slate-900 tracking-tight leading-[0.95] mb-8"
             >
-              Programmable USDC <br/>
+              Programmable USDC <br />
               <span className="text-slate-400">Revenue Splitting.</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -206,7 +209,7 @@ export default function Dashboard() {
             >
               Create reusable settlement rails to route stablecoin payments instantly and automatically to multiple recipient wallets.
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -232,7 +235,7 @@ export default function Dashboard() {
               { label: 'Payments Routed', value: '14', icon: Activity, color: 'text-green-600', bg: 'bg-green-50' },
               { label: 'Active Rails', value: '5', icon: Layers, color: 'text-purple-600', bg: 'bg-purple-50' },
             ].map((stat, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -272,12 +275,12 @@ export default function Dashboard() {
 
         {/* Floating Sample Cards (Background/Blurred) */}
         <div className="fixed bottom-0 right-0 p-12 opacity-20 blur-[2px] pointer-events-none hidden xl:block">
-           <div className="w-[400px] bg-white p-8 rounded-[40px] border border-slate-200 shadow-2xl rotate-3 translate-y-20">
-              <div className="w-12 h-12 bg-black rounded-2xl mb-6" />
-              <div className="h-6 w-32 bg-slate-100 rounded-full mb-4" />
-              <div className="h-4 w-48 bg-slate-50 rounded-full mb-8" />
-              <div className="h-20 w-full bg-slate-50 rounded-[24px]" />
-           </div>
+          <div className="w-[400px] bg-white p-8 rounded-[40px] border border-slate-200 shadow-2xl rotate-3 translate-y-20">
+            <div className="w-12 h-12 bg-black rounded-2xl mb-6" />
+            <div className="h-6 w-32 bg-slate-100 rounded-full mb-4" />
+            <div className="h-4 w-48 bg-slate-50 rounded-full mb-8" />
+            <div className="h-20 w-full bg-slate-50 rounded-[24px]" />
+          </div>
         </div>
       </div>
     );
@@ -309,8 +312,8 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search rails by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -318,7 +321,7 @@ export default function Dashboard() {
             />
           </div>
           <div className="relative min-w-[200px]">
-            <select 
+            <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="w-full appearance-none px-5 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm focus:ring-2 focus:ring-black outline-none transition-all font-bold text-slate-700 pr-10"
@@ -393,8 +396,8 @@ export default function Dashboard() {
                 if (sortBy === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
                 if (sortBy === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
                 if (sortBy === 'active') {
-                  const aLast = a.payments?.length > 0 ? new Date(a.payments[a.payments.length-1].created_at).getTime() : 0;
-                  const bLast = b.payments?.length > 0 ? new Date(b.payments[b.payments.length-1].created_at).getTime() : 0;
+                  const aLast = a.payments?.length > 0 ? new Date(a.payments[a.payments.length - 1].created_at).getTime() : 0;
+                  const bLast = b.payments?.length > 0 ? new Date(b.payments[b.payments.length - 1].created_at).getTime() : 0;
                   return bLast - aLast;
                 }
                 if (sortBy === 'payments') return b.paymentCount - a.paymentCount;
@@ -411,10 +414,10 @@ export default function Dashboard() {
           <div className="mt-20">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
-                 <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
-                    <Activity size={20} />
-                 </div>
-                 Recent Settlement Activity
+                <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
+                  <Activity size={20} />
+                </div>
+                Recent Settlement Activity
               </h2>
               <Link href="/history" className="text-sm font-bold text-slate-900 hover:text-slate-600 flex items-center gap-2 group">
                 View All History <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -431,7 +434,7 @@ export default function Dashboard() {
                       <div>
                         <div className="text-sm font-bold text-slate-900">{payment.splits?.name || 'Unknown Split'}</div>
                         <div className="text-xs font-medium text-slate-400">
-                          {new Date(payment.created_at).toLocaleString()} • 
+                          {new Date(payment.created_at).toLocaleString()} •
                           <span className="font-mono ml-1">{payment.tx_hash.slice(0, 8)}...</span>
                         </div>
                       </div>
@@ -497,7 +500,7 @@ export default function Dashboard() {
                         <Plus size={16} /> Add Recipient
                       </button>
                     </div>
-                    
+
                     <div className="space-y-4">
                       {recipients.map((r, index) => (
                         <div key={index} className="flex gap-4 items-start">
@@ -536,14 +539,13 @@ export default function Dashboard() {
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="mt-4 flex justify-between items-center px-2">
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total</span>
-                      <span className={`text-sm font-bold ${
-                        recipients.reduce((acc, r) => acc + (parseFloat(r.percentage) || 0), 0) === 100 
-                        ? 'text-green-600' 
+                      <span className={`text-sm font-bold ${recipients.reduce((acc, r) => acc + (parseFloat(r.percentage) || 0), 0) === 100
+                        ? 'text-green-600'
                         : 'text-red-500'
-                      }`}>
+                        }`}>
                         {recipients.reduce((acc, r) => acc + (parseFloat(r.percentage) || 0), 0)}% / 100%
                       </span>
                     </div>
@@ -590,7 +592,7 @@ function SplitCard({ split }: { split: any }) {
         </div>
         <div className="flex gap-2 items-center">
           <span className="px-2.5 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-bold uppercase tracking-wider">Active Rail</span>
-          <button 
+          <button
             onClick={() => {
               const url = `${window.location.origin}/pay/${split.id}`;
               navigator.clipboard.writeText(url);
@@ -616,7 +618,7 @@ function SplitCard({ split }: { split: any }) {
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">{split.paymentCount} Settlements</span>
           </div>
         </div>
-        
+
         <div className="bg-slate-50 p-5 rounded-[24px] mb-6 flex justify-between items-center border border-slate-100">
           <div>
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Settled</div>
@@ -625,8 +627,8 @@ function SplitCard({ split }: { split: any }) {
           <div className="text-right">
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Last Activity</div>
             <div className="text-sm font-bold text-slate-600">
-              {split.payments?.length > 0 
-                ? new Date(split.payments[split.payments.length - 1].created_at).toLocaleDateString() 
+              {split.payments?.length > 0
+                ? new Date(split.payments[split.payments.length - 1].created_at).toLocaleDateString()
                 : 'No Activity'}
             </div>
           </div>
@@ -634,17 +636,17 @@ function SplitCard({ split }: { split: any }) {
 
         {/* Recipients Accordion */}
         <div className="mb-6">
-          <button 
+          <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full flex items-center justify-between py-2 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-black transition-colors"
           >
             <span>{isExpanded ? 'Hide Recipients' : 'View Recipients'}</span>
             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
-          
+
           <AnimatePresence>
             {(isExpanded || (split.recipients?.length <= 2)) && (
-              <motion.div 
+              <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -664,7 +666,7 @@ function SplitCard({ split }: { split: any }) {
               </motion.div>
             )}
           </AnimatePresence>
-          
+
           {!isExpanded && split.recipients?.length > 2 && (
             <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
               <div className="flex -space-x-2">
