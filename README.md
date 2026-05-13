@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ArcSplit
 
-## Getting Started
+**Programmable Stablecoin Revenue Splitting on Arc Testnet.**
 
-First, run the development server:
+ArcSplit is a modern fintech-style MVP that enables automatic, multi-wallet USDC distribution. Built for the Arc ecosystem, it demonstrates how programmable payments can simplify revenue sharing for teams, projects, and creators.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Multi-Wallet Splits**: Define multiple recipients with custom payout percentages.
+- **Atomic Settlement**: Funds are distributed instantly in a single transaction.
+- **Programmable Infrastructure**: Built on Arc Testnet via Solidity smart contracts.
+- **Modern UX**: Clean dashboard, simple payment links, and detailed receipts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend**: Next.js 15 (App Router), Tailwind CSS 4, Framer Motion.
+- **Web3**: Wagmi, Viem, RainbowKit, Reown.
+- **Backend**: Supabase.
+- **Contracts**: Solidity 0.8.20.
+- **Network**: Arc Testnet (Chain ID: 5042002).
 
-## Learn More
+## Quick Start
 
-To learn more about Next.js, take a look at the following resources:
+1. **Setup Environment**:
+   Copy `.env.local.example` to `.env.local` and fill in your Supabase and Reown credentials.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Deploy Contract**:
+   Use Foundry to deploy `contracts/ArcSplit.sol` to the Arc Testnet. Update `NEXT_PUBLIC_CONTRACT_ADDRESS` in `.env.local`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Install & Run**:
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-## Deploy on Vercel
+## Design Philosophy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+ArcSplit follows a "Fintech First" design aesthetic, inspired by platforms like Stripe and Mercury. It prioritizes clarity, minimal use of color, and high-quality typography over typical "degen" crypto aesthetics.
