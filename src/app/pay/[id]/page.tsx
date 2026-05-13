@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import { supabase } from '@/lib/supabase';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useChainId, useSwitchChain } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, ArrowRight, Wallet, Info, QrCode, Copy } from 'lucide-react';
@@ -13,7 +13,6 @@ import QRCode from "react-qr-code";
 
 const USDC_ADDRESS = '0x3600000000000000000000000000000000000000';
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x0000000000000000000000000000000000000000';
-const ARC_CHAIN_ID = 5042002;
 
 const USDC_ABI = [
   {
@@ -62,14 +61,10 @@ export default function PaymentPage() {
   const { id } = useParams();
   const router = useRouter();
   const { address, isConnected } = useAccount();
-  const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
   const [split, setSplit] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [amount, setAmount] = useState('10');
   const [step, setStep] = useState<'idle' | 'approving' | 'paying' | 'success'>('idle');
-
-  const isWrongNetwork = isConnected && chainId !== ARC_CHAIN_ID;
 
   const { data: allowance } = useReadContract({
     address: USDC_ADDRESS,
@@ -108,19 +103,11 @@ export default function PaymentPage() {
   const handleRecordPayment = async () => {
     if (!split || !payHash) return;
     
-    // Create a snapshot of the recipients and their payout amounts for permanent history
-    const payoutSnapshot = split.recipients?.map((r: any) => ({
-      address: r.address,
-      percentage: r.percentage,
-      amount: ((parseFloat(amount) * r.percentage) / 10000).toFixed(2)
-    }));
-
     await supabase.from('payments').insert({
       split_id: split.id,
       payer_address: address,
       amount: amount,
       tx_hash: payHash,
-      payout_data: payoutSnapshot, // Ensure this column exists or store as JSON
     });
   };
 
@@ -211,16 +198,21 @@ export default function PaymentPage() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100"
+            className="bg-white p-10 rounded-[48px] shadow-premium border border-slate-100 relative overflow-hidden group"
           >
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                  <Wallet className="text-slate-900" size={20} />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full blur-3xl -z-10 opacity-50 translate-x-10 -translate-y-10" />
+            
+            <div className="flex items-center justify-between mb-10">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center shadow-xl shadow-black/10 group-hover:scale-110 transition-transform">
+                  <Wallet className="text-white" size={28} strokeWidth={1.5} />
                 </div>
-                <span className="font-bold text-slate-900">Send USDC</span>
+                <div className="text-left">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Infrastructure Target</div>
+                  <div className="font-bold text-slate-900">USDC Payout Rail</div>
+                </div>
               </div>
-              <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-wider">Reusable Routing</span>
+              <span className="px-3 py-1 bg-slate-100 text-slate-500 border border-slate-200 rounded-full text-[10px] font-bold uppercase tracking-[0.2em]">Reusable</span>
             </div>
 
             <h1 className="text-3xl font-bold text-slate-900 mb-2">{split.name}</h1>
@@ -252,33 +244,12 @@ export default function PaymentPage() {
                   <Info className="flex-shrink-0" size={18} />
                   <p>Please connect your wallet to proceed with the payment.</p>
                 </div>
-              ) : isWrongNetwork ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 text-red-800 text-sm">
-                    <Info className="flex-shrink-0" size={18} />
-                    <div>
-                      <p className="font-bold">Wrong Network</p>
-                      <p className="opacity-80">Please switch to Arc Testnet to continue with the payment.</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => switchChain({ chainId: ARC_CHAIN_ID })}
-                    className="w-full py-5 bg-black text-white text-lg font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-black/10"
-                  >
-                    Switch to Arc Testnet
-                  </button>
-                  <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                    Network Required: Arc Testnet
-                  </div>
-                </div>
               ) : (
-                <div className="space-y-4">
-                  <button
-                    disabled={step !== 'idle' && step !== 'success'}
-                    onClick={handleAction}
-                    className="w-full py-5 bg-black text-white text-lg font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
-                  >
+                <button
+                  disabled={step !== 'idle' && step !== 'success'}
+                  onClick={handleAction}
+                  className="w-full py-5 bg-black text-white text-lg font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                >
                   {step === 'approving' || isApproveConfirming ? (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-2">
                        <div className="flex items-center gap-3">
@@ -303,11 +274,7 @@ export default function PaymentPage() {
                   ) : (
                     <> Send {amount} USDC <ArrowRight size={20} /> </>
                   )}
-                  <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                    Network Required: Arc Testnet
-                  </div>
-                </div>
+                </button>
               )}
 
               <p className="text-center text-xs text-slate-400">

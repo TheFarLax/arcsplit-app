@@ -26,25 +26,26 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="px-6 py-24 md:py-32 max-w-5xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="bg-white rounded-[48px] shadow-premium border border-slate-100 p-12 md:p-20"
           >
-            <span className="inline-block px-3 py-1 mb-6 text-sm font-medium text-slate-600 bg-slate-100 rounded-full">
+            <span className="inline-block px-4 py-1.5 mb-6 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full">
               Built on Arc Testnet
             </span>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900 mb-8">
-              Programmable <span className="text-slate-500">Revenue Splitting</span>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-slate-900 mb-8">
+              Programmable <span className="text-slate-400">Revenue Splitting</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
               Automate multi-wallet USDC distributions with atomic settlement. Create split configurations, generate payment links, and let smart contracts handle the rest.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
+            <Link
                 href="/dashboard"
-                className="w-full sm:w-auto px-8 py-4 bg-black text-white font-semibold rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-10 py-5 bg-black text-white font-bold rounded-2xl hover:bg-slate-800 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl shadow-black/10 text-lg"
               >
-                Go to Dashboard <ArrowRight size={20} />
+                Launch Infrastructure <ArrowRight size={22} />
               </Link>
               <a
                 href="https://docs.arc.network"
