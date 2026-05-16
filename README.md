@@ -40,9 +40,5 @@ ArcSplit is a professional-grade settlement infrastructure that enables creators
    npm run dev
    ```
 
-## 🏗️ Design Philosophy
-
-ArcSplit rejects "degen" aesthetics in favor of professional fintech depth. Inspired by Stripe and Mercury, the interface uses a minimalist palette (Slate, Graphite, White) with refined shadows and intentional typography to provide a trustworthy environment for financial operations.
-
 ---
 Built for the **Arc Advanced Agentic Coding** ecosystem.
